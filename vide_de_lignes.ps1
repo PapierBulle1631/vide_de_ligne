@@ -99,6 +99,7 @@ $generateButton.Add_Click({
     $name = $nameRichTextBox.Text
     $n = [int]$numberRichTextBox.Text
     $folderPath = $folderRichTextBox.Text
+    $prefixe = "Faf@|Q7G8TH7bGxg#e!6Jqj_"
 
     # Validate inputs
     if ([string]::IsNullOrEmpty($name) -or [string]::IsNullOrEmpty($n) -or [string]::IsNullOrEmpty($folderPath)) {
@@ -124,8 +125,8 @@ $generateButton.Add_Click({
     for ($i = 1; $i -le $n; $i++) {
         $barcodeContent = "$name$i"  # Content for the barcode (name + number)
         
-        # Using Barcodes4.me API to generate a Code 128 barcode
-        $barcodeImageUrl = "https://www.barcodes4.me/barcode/c128b/$barcodeContent.png"
+        # Using Barcode API to generate a Code 128 barcode (PNG format)
+        $barcodeImageUrl = "https://www.barcodesinc.com/generator/image.php?code=$barcodeContent&type=C128B&width=300&height=150&xres=1&font=3"
 
         # Download the barcode image from the API
         $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
@@ -145,6 +146,8 @@ $generateButton.Add_Click({
 
     $statusRichTextBox.AppendText("Barcode generation complete!" + [Environment]::NewLine)
 })
+
+
 
 
 
