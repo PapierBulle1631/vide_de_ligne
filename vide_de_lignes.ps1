@@ -97,7 +97,7 @@ $browseButton.Add_Click({
 # Generate Button Click Event to generate QR codes
 $generateButton.Add_Click({
     $name = $nameRichTextBox.Text
-    $n = $numberRichTextBox.Text
+    $n = [int]$numberRichTextBox.Text
     $folderPath = $folderRichTextBox.Text
 
     # Validate inputs
@@ -107,33 +107,46 @@ $generateButton.Add_Click({
     }
 
     # Validate that the number is a valid positive integer
-    if (-not ($n -match '^\d+$' -and $n -gt 0)) {
-        $statusRichTextBox.AppendText("Please enter a valid positive number for the number of QR codes." + [Environment]::NewLine)
+    if (-not ($n -gt 0)) {
+        $statusRichTextBox.AppendText("Please enter a valid positive number for the number of barcodes." + [Environment]::NewLine)
         return
     }
 
-    # Start QR Code Generation
-    $statusRichTextBox.AppendText("Generating QR Codes..." + [Environment]::NewLine)
+    # Ensure folder exists
+    if (-not (Test-Path $folderPath)) {
+        $statusRichTextBox.AppendText("The specified folder does not exist. Creating the folder..." + [Environment]::NewLine)
+        New-Item -ItemType Directory -Path $folderPath
+    }
+
+    # Start Barcode Generation
+    $statusRichTextBox.AppendText("Generating Barcodes..." + [Environment]::NewLine)
 
     for ($i = 1; $i -le $n; $i++) {
-        $qrContent = "$name$i"  # Content for the QR code (name + number)
-        $qrImageUrl = "https://api.qr-code-generator.com/v1/create/?data=$qrContent&size=150x150&format=png"
+        $barcodeContent = "$name$i"  # Content for the barcode (name + number)
+        
+        # Using Barcodes4.me API to generate a Code 128 barcode
+        $barcodeImageUrl = "https://www.barcodes4.me/barcode/c128b/$barcodeContent.png"
 
-        # Download the QR code image from the API
-        $qrImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
+        # Download the barcode image from the API
+        $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
+
+        # Log progress
+        $statusRichTextBox.AppendText("Generating Barcode $i of $n..." + [Environment]::NewLine)
 
         try {
             # Use Invoke-WebRequest to fetch the image and save it locally
-            Invoke-WebRequest -Uri $qrImageUrl -OutFile $qrImagePath
-            $statusRichTextBox.AppendText("QR Code saved: $qrImagePath" + [Environment]::NewLine)
+            Invoke-WebRequest -Uri $barcodeImageUrl -OutFile $barcodeImagePath
+            $statusRichTextBox.AppendText("Barcode saved: $barcodeImagePath" + [Environment]::NewLine)
         }
         catch {
-            $statusRichTextBox.AppendText("Failed to generate or save QR code for: $qrContent" + [Environment]::NewLine)
+            $statusRichTextBox.AppendText("Failed to generate or save barcode for: $barcodeContent. Error: $($_.Exception.Message)" + [Environment]::NewLine)
         }
     }
 
-    $statusRichTextBox.AppendText("QR code generation complete!" + [Environment]::NewLine)
+    $statusRichTextBox.AppendText("Barcode generation complete!" + [Environment]::NewLine)
 })
+
+
 
 # Show the form
 $form.ShowDialog()
