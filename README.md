@@ -45,9 +45,11 @@ Cliquez sur le bouton **"Générer les codes"** pour démarrer la génération d
 
 ## Exemple d'utilisation
 
-1. Numéro de machine : **Machine001**
+1. Numéro de machine : **4435**
 2. Nombre de codes : **5**
 3. Dossier d'enregistrement : **C:\Users\Utilisateur\Documents\CodesQR**
+4. Nom à la sortie : **44351.png**
+5. Valeur du scan : **Faf@|Q7G8TH7bGxg#e!6Jqj_443501**
 
 Après avoir cliqué sur **"Générer les codes"**, le script générera cinq codes QR pour **Machine001** et les enregistrera dans le dossier **C:\Users\Utilisateur\Documents\CodesQR**.
 
