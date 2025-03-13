@@ -22,6 +22,17 @@ $tableLayout.ColumnCount = 2
 $tableLayout.Dock = [System.Windows.Forms.DockStyle]::Fill
 $tableLayout.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 45)))
 $tableLayout.ColumnStyles.Add((New-Object System.Windows.Forms.ColumnStyle([System.Windows.Forms.SizeType]::Percent, 60)))
+
+
+# Make the row containing the statusRichTextBox flexible
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::AutoSize)))  # Add AutoSize for all rows initially
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::AutoSize)))
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::AutoSize)))
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::AutoSize)))
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::Percent, 100)))  # Row for statusRichTextBox takes the remaining space
+$tableLayout.RowStyles.Add((New-Object System.Windows.Forms.RowStyle([System.Windows.Forms.SizeType]::AutoSize)))
+
+
 $form.Controls.Add($tableLayout)
 
 # Name Label
@@ -90,6 +101,7 @@ $statusRichTextBox.BorderStyle = 'FixedSingle'
 $tableLayout.Controls.Add($statusRichTextBox, 0, 4)
 $tableLayout.SetColumnSpan($statusRichTextBox, 2)  # Span across 2 columns
 
+
 # Generate Button
 $generateButton = New-Object System.Windows.Forms.Button
 $generateButton.Text = "Générer les codes"
@@ -132,7 +144,7 @@ $generateButton.Add_Click({
     }
 
     # Start Barcode Generation
-    $statusRichTextBox.AppendText("`rLancement de la génération...`r" + [Environment]::NewLine)
+    $statusRichTextBox.AppendText("`rLancement de la génération...`r`n" + [Environment]::NewLine)
 
     for ($i = 1; $i -le $n; $i++) {
         if ($i -lt 10){ #Add a zero to print 01 instead of 1
