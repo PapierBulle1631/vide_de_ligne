@@ -1,4 +1,10 @@
-﻿Add-Type -AssemblyName System.Windows.Forms
+﻿# Si l'éxecution de script est désactivée
+#
+# Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+#
+#
+
+Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 # Create the form
@@ -132,9 +138,12 @@ $generateButton.Add_Click({
         if ($i -lt 10){ #Add a zero to print 01 instead of 1
             # Concatenate prefix and barcode content
             $barcodeContent = "$prefixe$name"+"0"+"$i"  # Add the prefix to the barcode content
+            $tempName = "$name"+"0"+"$i"
+            $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$tempName.png"
         } else {
             # Concatenate prefix and barcode content
             $barcodeContent = "$prefixe$name$i"  # Add the prefix to the barcode content
+            $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
         }
 
         # URL encode the content to ensure it's valid for the barcode API (avoids issues with special characters)
@@ -144,7 +153,7 @@ $generateButton.Add_Click({
         $barcodeImageUrl = "https://barcode.tec-it.com/barcode.ashx?data=$encodedBarcodeContent&code=Code128&dpi=96&dataseparator="
 
         # Download the barcode image from the API
-        $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
+
 
         # Log progress
         $statusRichTextBox.AppendText("Génération du code numéro $i sur $n..." + [Environment]::NewLine)
@@ -152,7 +161,7 @@ $generateButton.Add_Click({
         try {
             # Use Invoke-WebRequest to fetch the image and save it locally
             Invoke-WebRequest -Uri $barcodeImageUrl -OutFile $barcodeImagePath
-            $statusRichTextBox.AppendText("Barcode saved: $barcodeImagePath" + [Environment]::NewLine)
+            $statusRichTextBox.AppendText("Code barre créé : $barcodeImagePath" + [Environment]::NewLine)
         }
         catch {
             $statusRichTextBox.AppendText("`rEchec de génération du code suivant : $barcodeContent. Erreur : $($_.Exception.Message)" + [Environment]::NewLine)
