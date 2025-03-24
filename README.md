@@ -30,7 +30,7 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
 3. Exécutez le script avec la commande suivante :
 
 ```powershell
-.\NomDuScript.ps1
+.\vide_de_lignes.ps1
 ```
 
 ### Étape 3 : Utiliser l'interface graphique
