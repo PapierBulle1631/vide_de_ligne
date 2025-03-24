@@ -147,38 +147,62 @@ $generateButton.Add_Click({
     # Start Barcode Generation
     $statusRichTextBox.AppendText("`rLancement de la génération...`r`n" + [Environment]::NewLine)
 
+    # Retry logic configuration
+    $maxRetries = 3
+    $retryDelaySeconds = 2  # Delay in seconds between retries
+
     for ($i = 1; $i -le $n; $i++) {
-        if ($i -lt 10){ # Add a zero to print 01 instead of 1
-            # Concatenate prefix and barcode content
-            $barcodeContent = "$prefixe$name"+"0"+"$i"  # Add the prefix to the barcode content
-            $tempName = "$name"+"0"+"$i"
+        # Construct barcode content and file name
+        if ($i -lt 10) {  # Add a zero to print 01 instead of 1
+            $barcodeContent = "$prefixe$name" + "0" + "$i"
+            $tempName = "$name" + "0" + "$i"
             $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$tempName.png"
         } else {
-            # Concatenate prefix and barcode content
-            $barcodeContent = "$prefixe$name$i"  # Add the prefix to the barcode content
+            $barcodeContent = "$prefixe$name$i"
             $barcodeImagePath = Join-Path -Path $folderPath -ChildPath "$name$i.png"
         }
 
-        # URL encode the content to ensure it's valid for the barcode API (avoids issues with special characters)
+        # URL encode the content to ensure it's valid for the barcode API
         $encodedBarcodeContent = [uri]::EscapeDataString($barcodeContent)
 
         # Use TEC-IT barcode API
         $barcodeImageUrl = "https://barcode.tec-it.com/barcode.ashx?data=$encodedBarcodeContent&code=Code128&dpi=96&dataseparator="
 
-        # Download the barcode image from the API
-
         # Log progress
         $statusRichTextBox.AppendText("Génération du code numéro $i sur $n..." + [Environment]::NewLine)
 
-        try {
-            # Use Invoke-WebRequest to fetch the image and save it locally
-            Invoke-WebRequest -Uri $barcodeImageUrl -OutFile $barcodeImagePath
-            $statusRichTextBox.AppendText("Code barre créé : $barcodeImagePath" + [Environment]::NewLine)
+        $retryCount = 0
+        $success = $false
+
+        while ($retryCount -lt $maxRetries -and !$success) {
+            try {
+                # Use Invoke-WebRequest to fetch the image and save it locally
+                Invoke-WebRequest -Uri $barcodeImageUrl -OutFile $barcodeImagePath
+                $statusRichTextBox.AppendText("Code barre créé : $barcodeImagePath" + [Environment]::NewLine)
+
+                # If successful, exit the loop
+                $success = $true
+            }
+            catch {
+                $retryCount++
+                $statusRichTextBox.AppendText("`rEchec de génération du code suivant : $barcodeContent. Erreur : $($_.Exception.Message). Tentative $retryCount sur $maxRetries..." + [Environment]::NewLine)
+
+                if ($retryCount -lt $maxRetries) {
+                    # Wait before retrying
+                    Start-Sleep -Seconds $retryDelaySeconds
+                }
+            }
         }
-        catch {
-            $statusRichTextBox.AppendText("`rEchec de génération du code suivant : $barcodeContent. Erreur : $($_.Exception.Message)" + [Environment]::NewLine)
+
+        # If not successful after retries, log an error
+        if (!$success) {
+            $statusRichTextBox.AppendText("`rEchec de génération après $maxRetries tentatives pour : $barcodeContent" + [Environment]::NewLine)
         }
+
+        # Add a delay to avoid rate-limiting issues
+        Start-Sleep -Seconds 1
     }
+
 
     $statusRichTextBox.AppendText("`rFin de la génération des codes !" + [Environment]::NewLine)
 
