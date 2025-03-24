@@ -1,65 +1,69 @@
-# Générateur de Code QR (Code128) pour Machines
+# Générateur de codes barres et de documents Word
 
-Ce script PowerShell permet de générer une série de codes QR (Code128) personnalisés pour une machine spécifique. Vous pouvez spécifier un nom de machine, un nombre de codes à générer, et le dossier de destination pour enregistrer les fichiers images des codes QR générés.
+## Description
+Ce script PowerShell permet de générer un certain nombre de codes-barres (de type Code128) en utilisant l'API TEC-IT, puis de les organiser dans un document Word. Les utilisateurs peuvent spécifier un préfixe, un numéro de machine, et un dossier de destination pour enregistrer les codes-barres générés sous forme d'images PNG.
+
+## Fonctionnalités principales
+1. **Interface graphique utilisateur (GUI)** : Le script utilise une interface graphique pour collecter les informations nécessaires (numéro de machine, nombre de codes à générer, dossier de sauvegarde).
+2. **Sélection de dossier** : Permet à l'utilisateur de parcourir et de choisir un dossier pour enregistrer les codes-barres.
+3. **Génération de codes-barres** : Crée un nombre spécifié de codes-barres en concaténant un préfixe et le numéro de la machine avec des numéros incrémentaux.
+4. **Exportation vers Word** : Insère les codes-barres générés dans un document Word, en les alternant entre deux colonnes dans un tableau.
+5. **Gestion des erreurs** : Affiche des messages d'erreur dans l'interface en cas de problème, par exemple si le dossier n'existe pas.
 
 ## Prérequis
+- **PowerShell** (version 5.1 ou supérieure)
+- **Microsoft Word** installé pour l'exportation vers Word.
+- **Connexion Internet** pour télécharger les images des codes-barres à partir de l'API TEC-IT.
 
-- PowerShell 5.0 ou supérieur
-- Une connexion Internet pour télécharger les images des codes QR via l'API TEC-IT.
-- Les bibliothèques .NET suivantes :
-  - `System.Windows.Forms`
-  - `System.Drawing`
+## Instructions d'utilisation
 
-## Fonctionnalités
+### Étape 1 : Activer l'exécution de scripts
+Si l'exécution de scripts est désactivée sur votre machine, vous devrez d'abord activer l'exécution de scripts PowerShell en exécutant la commande suivante :
 
-1. **Interface graphique (GUI)** pour la saisie des informations nécessaires :
-   - Numéro de la machine
-   - Nombre de codes à générer
-   - Dossier de destination pour l'enregistrement des fichiers image.
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
+```
 
-2. **Génération des codes QR** :
-   - Les codes QR sont créés à l'aide de l'API TEC-IT.
-   - Les codes QR sont enregistrés sous forme d'images PNG dans le dossier spécifié.
+### Étape 2 : Exécuter le script
+1. Téléchargez le script PowerShell.
+2. Ouvrez une fenêtre PowerShell et naviguez jusqu'au dossier contenant le script.
+3. Exécutez le script avec la commande suivante :
 
-3. **Validation des entrées** :
-   - Vérifie que tous les champs sont remplis.
-   - Vérifie que le nombre de codes est un entier valide et positif.
-   - Crée le dossier de destination si celui-ci n'existe pas.
+```powershell
+.\NomDuScript.ps1
+```
 
-## Utilisation
+### Étape 3 : Utiliser l'interface graphique
+Une fois le script lancé, une fenêtre apparaîtra avec les champs suivants :
+- **Numéro de machine** : Entrez le numéro de la machine (par exemple, "Machine001").
+- **Nombre de codes** : Spécifiez le nombre de codes-barres à générer.
+- **Dossier d'enregistrement** : Sélectionnez un dossier où les images PNG des codes-barres seront sauvegardées.
+- **Parcourir** : Utilisez ce bouton pour choisir un dossier de sauvegarde.
+- **Générer les codes** : Cliquez sur ce bouton pour lancer la génération des codes-barres.
 
-### Étape 1 : Lancer le script
+Le script générera les codes-barres et les enregistrera dans le dossier spécifié. Ensuite, un document Word sera créé avec les codes-barres insérés dans un tableau.
 
-1. Ouvrez PowerShell.
-2. Exécutez le script fourni.
+### Étape 4 : Visualiser les résultats
+Une fois la génération terminée, vous trouverez le document Word créé dans le dossier spécifié. Le document contiendra les images des codes-barres insérées dans un tableau à deux colonnes.
 
-### Étape 2 : Remplir le formulaire
+## Détails techniques
 
-1. **Numéro de machine** : Entrez un nom ou un identifiant pour la machine.
-2. **Nombre de codes** : Indiquez combien de codes QR vous souhaitez générer.
-3. **Dossier d'enregistrement** : Spécifiez le dossier où vous souhaitez enregistrer les fichiers PNG des codes QR. Vous pouvez également cliquer sur le bouton "Parcourir" pour sélectionner un dossier via l'explorateur de fichiers.
+### Structure de l'interface
+- **Formulaire principal** : Le formulaire a une taille fixe, avec un `TableLayoutPanel` pour la disposition des éléments (textes, champs de saisie et boutons).
+- **Champs de saisie** : Chaque champ (Numéro de machine, Nombre de codes, Dossier de sauvegarde) est associé à un `RichTextBox` permettant de saisir les informations.
+- **État** : Un `RichTextBox` supplémentaire affiche l'état d'avancement des opérations et des erreurs.
+  
+### Génération des codes-barres
+Les codes-barres sont générés à l'aide de l'API TEC-IT, avec un format `Code128` et une résolution de 96 DPI. Chaque code-barre est enregistré en tant qu'image PNG dans le dossier choisi.
 
-### Étape 3 : Générer les codes QR
+### Exportation vers Word
+Après la génération des codes-barres, un document Word est créé. Les images des codes-barres sont insérées dans un tableau à deux colonnes. Le document est ensuite sauvegardé sous le nom `vide_de_lignes.docx`.
 
-Cliquez sur le bouton **"Générer les codes"** pour démarrer la génération des codes QR. Le script affichera des messages de progression dans la zone de texte de statut. À la fin du processus, vous trouverez les fichiers PNG dans le dossier spécifié.
+## Problèmes courants et solutions
 
-## Exemple d'utilisation
+- **Le dossier de sauvegarde n'existe pas** : Si le dossier spécifié n'existe pas, le script le crée automatiquement.
+- **Erreur de connexion à l'API TEC-IT** : Si la connexion à l'API échoue, le script affichera un message d'erreur pour chaque code-barre qui n'a pas pu être généré.
 
-1. Numéro de machine : **4435**
-2. Nombre de codes : **5**
-3. Dossier d'enregistrement : **C:\Users\Utilisateur\Documents\CodesQR**
-4. Nom à la sortie : **44351.png**
-5. Valeur du scan : **Faf@|Q7G8TH7bGxg#e!6Jqj_443501**
 
-Après avoir cliqué sur **"Générer les codes"**, le script générera cinq codes QR pour **Machine001** et les enregistrera dans le dossier **C:\Users\Utilisateur\Documents\CodesQR**.
-
-## Notes
-
-- Le script utilise un préfixe fixe (`Faf@|Q7G8TH7bGxg#e!6Jqj_`) avant d'ajouter le nom de la machine et un numéro incrémental pour chaque code généré.
-- Les codes sont créés en utilisant l'API de TEC-IT et sont en format **Code128**.
-- Le script gère également les erreurs, affichant un message dans la zone de statut si un problème survient lors de la génération d'un code QR.
-
-## Dépannage
-
-- **Si le dossier d'enregistrement n'existe pas** : Il sera créé automatiquement.
-- **Si un code QR échoue à se générer** : Un message d'erreur s'affichera dans la zone de statut.
+## Licence
+Ce script est mis à disposition pour le Groupe Mayr-Melnhof gratuitement.
